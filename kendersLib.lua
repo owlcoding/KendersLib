@@ -145,6 +145,16 @@ function table.popLast ( t )
     return el
 end
 
+function table.contains(table, element)
+  for _, value in pairs(table) do
+    if value == element then
+      return true
+    end
+  end
+  return false
+end
+
+
 -- **** 
 -- display group sorting
 -- ****
@@ -156,7 +166,7 @@ function zSort(myGroup)
         end
         table.sort(kids,  
                 function(a, b)
-                                return (a.z or 1) < (b.z or 1) -- "layer" is your custom z-index field
+                                return (a.z or a.layer or 1) < (b.z or b.layer or 1) -- "layer" is your custom z-index field
                 end
         )
         for i = 1,n do
@@ -179,7 +189,15 @@ math.random (); math.random (); math.random ();
 -- ****
 -- rect methods
 -- ****
-function isPointInRect ( point, rect )
+function isPointInRect ( point, rect, optionalArgThatIsARect )
+    if (optionalArgThatIsARect  ~= nil) then
+        -- 3-arguments call. 
+        -- so first 2 arguments are point coordinates and last one is a rect
+        local x = point
+        local y = rect
+        rect = optionalArgThatIsARect 
+        point = {x = x, y = y}
+    end
     if ( point.x > rect.xMin and point.x < rect.xMax and point.y > rect.yMin and point.y < rect.yMax ) then
         return true
     else
@@ -330,9 +348,7 @@ if ( (display.pixelHeight/display.pixelWidth) > 1.5 ) then
 end
  
 -- Now identify the Apple family of devices:
-print ("Before ip")
 if ( string.sub( model, 1, 2 ) == "iP" ) then
-    print ("ip")
     -- We are an iOS device of some sort
     M.isApple = true
  
