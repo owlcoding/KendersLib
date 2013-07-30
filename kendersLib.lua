@@ -159,6 +159,7 @@ end
 -- display group sorting
 -- ****
 function zSort(myGroup)
+    if myGroup ~= nil then
         local n = myGroup.numChildren
         local kids = {}
         for i=1,n do
@@ -174,6 +175,7 @@ function zSort(myGroup)
         end
         return kids[n]
         -- return myGroup
+    end
 end
 _G["zSort"] = zSort
 
