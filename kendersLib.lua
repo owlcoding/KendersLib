@@ -131,6 +131,12 @@ function table.popRandom ( t )
     return el
 end
 
+function table.pop ( t, i )
+    local el = t [ i ]
+    table.remove ( t, i )
+    return el
+end
+
 function table.shuffle ( t )
     local t2 = {}
     while #t > 0 do
