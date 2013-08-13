@@ -52,9 +52,9 @@ end
               screenY = display.screenOriginY
           screenWidth = display.contentWidth - screenX * 2
          screenHeight = display.contentHeight - screenY * 2
-           screenLeft = screenX
-          screenRight = screenX + screenWidth
-            screenTop = screenY
+           display.screenLeft = screenX
+          display.screenRight = screenX + screenWidth
+            display.screenTop = screenY
          display.screenBottom = screenY + screenHeight
    KLCache.contentWidth = display.contentWidth
   KLCache.contentHeight = display.contentHeight
