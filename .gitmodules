@@ -1,0 +1,3 @@
+[submodule "GG/GGData"]
+	path = GG/GGData
+	url = https://github.com/GlitchGames/GGData.git
