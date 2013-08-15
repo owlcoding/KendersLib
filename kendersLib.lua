@@ -4,6 +4,7 @@ local folderOfThisFile = (...):match("(.-)[^%.]+$")
 module( pathOfThisFile, package.seeall )
 
 local KLCache = {}
+local Toast = {}
 
 
 local sb = require ("storyboard")
@@ -46,6 +47,7 @@ KLCache [ 'gotoScene' ] = sb.gotoScene
 sb.gotoScene = function ( s, t, tm )
     cancelAllTimers ()
     cancelAllTransitions ()
+    Toast.destroyAllToasts ()
     KLCache [ 'gotoScene' ] ( s, t, tm )
 end
 
@@ -154,13 +156,22 @@ function table.popLast ( t )
     return el
 end
 
-function table.contains(table, element)
-  for _, value in pairs(table) do
+function table.contains(t, element)
+  for _, value in pairs(t) do
     if value == element then
       return true
     end
   end
   return false
+end
+
+function table.removeObject ( t, element )
+    for _, value in pairs ( t ) do 
+        if value == element then
+            table.remove ( t, _ )
+            return
+        end
+    end
 end
 
 
@@ -410,3 +421,75 @@ local savedState = GGData:new( "savedState" )
 savedState:save()
 
 _G["savedState"] = savedState
+
+
+-- toast
+Toast.allToasts = {}
+
+local trueDestroy;
+local newToast
+local destroyToast
+local destroyAllToasts
+
+-------------------------------
+-- private functions
+-------------------------------
+function trueDestroyToast(toast)
+    if toast.destroyTimer then
+        timer.cancel ( toast.destroyTimer )
+    end
+    toast.destroyTimer = nil
+    
+    toast:removeSelf();
+    table.removeObject ( Toast.allToasts, toast )
+    toast = nil;
+end
+
+-------------------------------
+-- public functions
+-------------------------------
+function newToast(pText, pTime)
+    local text = pText or "nil";
+    local pTime = pTime;
+    local toast = display.newGroup();
+
+    toast.text                      = display.newText(toast, pText, 14, 12, native.systemFont, 20);
+    toast.background                = display.newRoundedRect( toast, 0, 0, toast.text.width + 24, toast.text.height + 24, 16 );
+    toast.background.strokeWidth    = 4
+    toast.background:setFillColor(72, 64, 72)
+    toast.background:setStrokeColor(96, 88, 96)
+
+    toast.text:toFront();
+
+    toast:setReferencePoint(toast.width*.5, toast.height*.5)
+    --utils.maintainRatio(toast);
+
+    toast.alpha = 0;
+    toast.transition = transition.to(toast, {time=250, alpha = 1});
+
+    if pTime ~= nil then
+        toast.destroyTimer = timer.performWithDelay(pTime, function() destroyToast(toast) end);
+    end
+
+    toast.x = display.contentWidth * .5
+    toast.y = display.contentHeight * .9
+    Toast.allToasts [ #Toast.allToasts + 1 ] = toast
+    return toast;
+end
+
+function destroyToast(toast)
+    toast.destroyTimer = nil
+    toast.transition = transition.to(toast, {time=250, alpha = 0, onComplete = function() trueDestroyToast(toast) end});
+end
+function destroyAllToasts ()
+    print ( ">>> Destroying all toasts <<<")
+    while ( #Toast.allToasts > 0 ) do
+        trueDestroyToast ( Toast.allToasts [ 1 ] )
+    end
+    Toast.allToasts = {}
+end
+
+Toast.new = newToast
+Toast.destroy = destroyToast
+Toast.destroyAllToasts = destroyAllToasts
+_G["Toast"] = Toast
