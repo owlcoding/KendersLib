@@ -493,3 +493,38 @@ Toast.new = newToast
 Toast.destroy = destroyToast
 Toast.destroyAllToasts = destroyAllToasts
 _G["Toast"] = Toast
+
+local printTable 
+
+local table2str
+
+table2str = function ( t, indent )
+    
+    if indent == nil then indent = 1 end
+    local s = ""
+    local ind = ""
+    for i = 1,indent do
+       ind = ind .. " "
+   end 
+    for k, v in pairs ( t ) do
+        if type ( v ) == "table" then
+            s = s .. ind .. k .. " => { " .. table2str ( v, indent + 1 ) .. " }, " 
+        else
+            if type ( v ) == "boolean" then
+                if v then
+                    v = "true"
+                else
+                    v = "false"
+                end
+            end
+            s = s .. ind .. k .. " => " .. v .. ", "
+        end
+        -- s = "\n" .. s .. "\n"
+    end
+    return s
+end
+
+printTable = function ( t )
+    print ( table2str ( t ))
+end
+_G [ "printTable" ] = printTable
