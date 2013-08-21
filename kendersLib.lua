@@ -25,6 +25,14 @@ trToCache = transition.to
      transitionStash [ tr ] = tr 
      return tr
  end
+
+ trcToCache = transition.cancel
+ transition.cancel = function ( tid )
+     if tid then
+         trcToCache ( tid )
+     end
+ end
+         
  
 function cancelAllTimers ()
     print (">>> Canceling all timers <<<")
