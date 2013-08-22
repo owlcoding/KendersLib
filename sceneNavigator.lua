@@ -55,7 +55,7 @@ function navigator:pushScene ( sceneName, params )
             local rectG = display.newGroup ()
             newScene.view:insert ( rectG )
             if self.navigationBarImage == nil then
-                local rect = display.newRect( rectG, display.screenLeft, 0, display.contentWidth, 33 )
+                local rect = display.newRect( rectG, display.screenLeft, display.screenTop, display.contentWidth, 33 )
                 local color = { 255, 255, 255, 255 }
                 if navigator.navigationBarColor ~= nil then
                     print ( "Color is defined" )
@@ -91,7 +91,7 @@ function navigator:pushScene ( sceneName, params )
                     end,
                 })
                 backB.x = display.screenLeft + 40 + 2
-                backB.y = 16
+                backB.y = display.screenTop + 16
                 rectG:insert ( backB )
             end
         end

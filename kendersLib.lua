@@ -525,6 +525,9 @@ table2str = function ( t, indent )
                     v = "false"
                 end
             end
+            if type ( v ) == "function" then
+                v = "function" 
+            end
             s = s .. ind .. k .. " => " .. v .. ", "
         end
         -- s = "\n" .. s .. "\n"
