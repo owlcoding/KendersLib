@@ -539,3 +539,15 @@ printTable = function ( t )
     print ( table2str ( t ))
 end
 _G [ "printTable" ] = printTable
+
+KLCache.displayremove = display.remove
+
+display.remove = function ( obj )
+    if obj == nil then
+        return
+    end
+    KLCache.displayremove ( obj )
+    if obj and obj.dispatchEvent then
+        obj:dispatchEvent ({ name = "objectRemoved" })
+    end
+end
