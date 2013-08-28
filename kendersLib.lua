@@ -35,18 +35,26 @@ trToCache = transition.to
          
  
 function cancelAllTimers ()
-    print (">>> Canceling all timers <<<")
+    local c = 0
     for i, t in pairs ( timersStash ) do
         timer.cancel ( i )
+        c = c + 1
     end
     timersStash = {}
+    if c > 0 then
+        print (">>> Cancelled " .. c .. " timers <<<")
+    end
 end
 function cancelAllTransitions ()
-    print (">>> Canceling all transitions <<<")
+    local c = 0
     for i, t in pairs ( transitionStash ) do
         transition.cancel ( i )
+        c = c + 1
     end
     transitionStash = {}
+    if c > 0 then
+        print (">>> Cancelled " .. c .. " transitions <<<")
+    end
 end
 _G['cancelAllTransitions'] = cancelAllTransitions
 _G['cancelAllTimers'] = cancelAllTimers
@@ -490,11 +498,13 @@ function destroyToast(toast)
     toast.transition = transition.to(toast, {time=250, alpha = 0, onComplete = function() trueDestroyToast(toast) end});
 end
 function destroyAllToasts ()
-    print ( ">>> Destroying all toasts <<<")
-    while ( #Toast.allToasts > 0 ) do
-        trueDestroyToast ( Toast.allToasts [ 1 ] )
+    if ( #Toast.allToasts > 0 ) then
+        print ( ">>> Destroying " .. #Toast.allToasts .. " toasts <<<")
+        while ( #Toast.allToasts > 0 ) do
+            trueDestroyToast ( Toast.allToasts [ 1 ] )
+        end
+        Toast.allToasts = {}
     end
-    Toast.allToasts = {}
 end
 
 Toast.new = newToast

@@ -105,6 +105,10 @@ function navigator:popScene ()
         local currentScene = storyboard.getCurrentSceneName()
         local cs = table.popLast ( self.navigationStack )
         local newScene = self.navigationStack [ #self.navigationStack ]
+        if type ( newScene [ 1 ] ) == "string" then
+            -- it's a released scene in stack - we need to recreate it now
+            newScene [ 1 ] = storyboard.loadScene ( newScene [ 3 ], false, newScene [ 4 ] )
+        end
         print ( "Popping. ", currentScene, " --> ", newScene [ 3 ] )
         local params = newScene [ 4 ]
         if type ( params ) == "string" then
@@ -128,10 +132,23 @@ function navigator:popScene ()
     end
 end
 
+function navigator:freeMem ()
+    for i=1, #self.navigationStack - 1 do
+        self.navigationStack [ i ] [ 1 ] = "freed mem"
+        storyboard.purgeScene ( self.navigationStack [ 3 ])
+        print ( "Freed some memory" )
+    end
+    print ("Collect garbage: ", collectgarbage ( "count" ))
+end
+
 storyboard.pushScene = function ( sceneName, params )
     storyboard.navigator:pushScene ( sceneName, params )
 end
 
 storyboard.popScene = function () 
     storyboard.navigator:popScene ()
+end
+
+storyboard.freeMem = function ()
+    storyboard.navigator:freeMem ()
 end
