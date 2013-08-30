@@ -17,6 +17,12 @@ local function newSprite ( a, b, c )
         self:setFrame ( idx )
     end
     
+    sprite:addEventListener ( "tap", function ( ev )
+        if sprite and sprite.action then
+            return sprite.action ( ev )
+        end
+        return false
+    end)
     return sprite
 end
 
