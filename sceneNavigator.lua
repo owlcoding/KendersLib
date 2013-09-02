@@ -28,7 +28,19 @@ navigator.navigationBarColor = nil
 navigator.navigationBarImage = nil
 navigator.navigationBarHiddenScenes = {}
 
+local function handleKeyEvent ( event )
+    local phase = event.phase
+    local keyName = event.keyName
+	if phase == "down" and keyName == "back" then
+        return navigator:popScene ()
+	end
+	return false
+end
+
 function navigator:pushScene ( sceneName, params )
+    Runtime:removeEventListener ( "key", handleKeyEvent )
+    Runtime:addEventListener ( "key", handleKeyEvent )
+    
     local currentScene = storyboard.getCurrentSceneName()
     print ( "Pushing. ", currentScene, " --> ", sceneName )
     -- if ( ( #self.navigationStack == 0 and currentScene ~= nil ) or self.navigationStack [ #self.navigationStack ] ~= currentScene ) then
@@ -129,7 +141,9 @@ function navigator:popScene ()
         end
         storyboard.gotoScene ( newScene [3], params )
         storyboard.purgeScene ( currentScene )
+        return true
     end
+    return false
 end
 
 function navigator:freeMem ()
