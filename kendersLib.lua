@@ -477,8 +477,10 @@ function newToast(pText, pTime)
 
     toast.text:toFront();
 
-    toast:setReferencePoint(toast.width*.5, toast.height*.5)
+    -- toast:setReferencePoint(toast.width*.5, toast.height*.5)
     --utils.maintainRatio(toast);
+    toast:setReferencePoint ( display.CenterReferencePoint )
+    toast.x, toast.y = display.contentWidth / 2, display.screenBottom - toast.contentHeight
 
     toast.alpha = 0;
     toast.transition = transition.to(toast, {time=250, alpha = 1});

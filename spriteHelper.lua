@@ -17,8 +17,8 @@ local function newSprite ( a, b, c )
         self:setFrame ( idx )
     end
     
-    sprite:addEventListener ( "tap", function ( ev )
-        if sprite and sprite.action then
+    sprite:addEventListener ( "touch", function ( ev )
+        if sprite and sprite.action and ev.phase == "began" then
             return sprite.action ( ev )
         end
         return false
@@ -44,7 +44,7 @@ local function loadSheets ( sheetsTable, dir )
     end
 end
 
-local function spriteForFrames ( framesList, speed )
+local function spriteForFrames ( framesList, speed, additionalParams )
     -- Requires all the frames to come from a single sheet!
     -- 
     -- Usage: 
@@ -69,7 +69,17 @@ local function spriteForFrames ( framesList, speed )
     for i = 1, #framesList do
         frames [ i ] = sheetInfo:getFrameIndex ( framesList [ i ] )
     end
-    local sprite = newSprite ( tex , { frames = frames, time = speed, loopDirection = "bounce" })
+    local loopDir = "bounce"
+    local loopCount = 0
+    if additionalParams then
+        if additionalParams.loopDirection then
+            loopDir = additionalParams.loopDirection
+        end
+        if additionalParams.loopCount then
+            loopCount = additionalParams.loopCount
+        end
+    end
+    local sprite = newSprite ( tex , { frames = frames, time = speed, loopDirection = loopDir, loopCount = loopCount })
     sprite:setFrame ( 1 )
     return sprite
 end
