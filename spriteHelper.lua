@@ -78,6 +78,8 @@ local function spriteForFrames ( framesList, speed, additionalParams )
         if additionalParams.loopCount then
             loopCount = additionalParams.loopCount
         end
+        if additionalParams.time then speed = additionalParams.time end
+        
     end
     local sprite = newSprite ( tex , { frames = frames, time = speed, loopDirection = loopDir, loopCount = loopCount })
     sprite:setFrame ( 1 )
