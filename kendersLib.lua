@@ -563,3 +563,9 @@ display.remove = function ( obj )
         obj:dispatchEvent ({ name = "objectRemoved" })
     end
 end
+function unrequire(m)
+    package.loaded[m] = nil
+    _G[m] = nil
+end
+
+_G [ "unrequire" ] = unrequire
