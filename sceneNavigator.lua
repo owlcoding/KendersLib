@@ -140,8 +140,15 @@ function navigator:popScene ()
             end
         end
         storyboard.gotoScene ( newScene [3], params )
-        storyboard.purgeScene ( currentScene )
+        timer.performWithDelay ( 500, function ()
+            storyboard.purgeScene ( currentScene )
+        end )
         return true
+    else
+        print ( " !!! can't pop scene !!! ")
+        for i=1, #self.navigationStack do
+            print (self.navigationStack [ i ] [ 3 ])
+        end
     end
     return false
 end
