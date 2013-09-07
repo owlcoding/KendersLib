@@ -1,5 +1,6 @@
 local pathOfThisFile = ...
 local folderOfThisFile = (...):match("(.-)[^%.]+$")
+local Log
 
 module( pathOfThisFile, package.seeall )
 
@@ -42,7 +43,7 @@ function cancelAllTimers ()
     end
     timersStash = {}
     if c > 0 then
-        print (">>> Cancelled " .. c .. " timers <<<")
+        Log (">>> Cancelled " .. c .. " timers <<<")
     end
 end
 function cancelAllTransitions ()
@@ -53,7 +54,7 @@ function cancelAllTransitions ()
     end
     transitionStash = {}
     if c > 0 then
-        print (">>> Cancelled " .. c .. " transitions <<<")
+        Log (">>> Cancelled " .. c .. " transitions <<<")
     end
 end
 _G['cancelAllTransitions'] = cancelAllTransitions
@@ -270,7 +271,7 @@ function KLDebug ( ... )
     local arr = split(debugText, "\n")
     if arr then
         for i=#arr-(DEBUG_LINES - arg.n - 1), #arr do
-            -- print (i, arg.n)
+            -- Log (i, arg.n)
             if arr[i] then
                 str = str .. "\n" .. arr[i]
             end
@@ -329,15 +330,15 @@ local setDrag = function ( obj, params )
     end
     
     if params == nil then
-        print ("Removing touch")
+        Log ("Removing touch")
         obj:removeEventListener ( "touch", obj.__drag )
         obj.__drag = nil
         obj.__drag_added = false
     else
         if obj.__drag_added == true then
-            print ("WARNING: Can't add second drag handler to the same object!")
+            Log ("WARNING: Can't add second drag handler to the same object!")
         else
-            print ("Adding touch")
+            Log ("Adding touch")
             obj:addEventListener ( "touch", obj.__drag )
             obj.__drag_added = true
         end
@@ -501,7 +502,7 @@ function destroyToast(toast)
 end
 function destroyAllToasts ()
     if ( #Toast.allToasts > 0 ) then
-        print ( ">>> Destroying " .. #Toast.allToasts .. " toasts <<<")
+        Log ( ">>> Destroying " .. #Toast.allToasts .. " toasts <<<")
         while ( #Toast.allToasts > 0 ) do
             trueDestroyToast ( Toast.allToasts [ 1 ] )
         end
@@ -569,3 +570,52 @@ function unrequire(m)
 end
 
 _G [ "unrequire" ] = unrequire
+
+local logs = {}
+local str = function ( o )
+    if o == nil then return "nil" end
+    if type ( o ) == "boolean" then
+        if o == true then
+            return "true"
+        else
+            return "false"
+        end
+    elseif type ( o ) == "table" then
+        return "table"
+    elseif type ( o ) == "function" then
+        for k, v in pairs ( debug.getinfo ( o )) do
+            -- print ("F", k, v )
+        end
+        return "" .. "function"
+    else
+        return "" .. o
+    end
+end
+Log = function ( ... )
+    local dbg = debug.getinfo ( 2 )
+    local line = dbg.currentline
+    local file = split ( dbg.source, "/")
+    file = file [ #file ]
+    for _, v in pairs ( dbg ) do
+        -- print  ("!!!", _, v )
+    end
+    
+    local args = ""
+    for i = 1, arg.n do
+        args = args .. "\t" .. str ( arg [ i ] )
+    end
+    
+    local logline = file .. ":" .. line .. args
+    logs [ #logs + 1 ] = logline
+    print ( logline )
+end
+local GetLogs = function ( ) 
+    local l = ""
+    for i=1, #logs do
+        l = l .. logs [ i ] .. "\n"
+    end
+    return l
+end
+
+_G [ "KLLog" ] = Log
+_G [ "KLGetLogs" ] = GetLogs

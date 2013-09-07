@@ -42,7 +42,7 @@ function navigator:pushScene ( sceneName, params )
     Runtime:addEventListener ( "key", handleKeyEvent )
     
     local currentScene = storyboard.getCurrentSceneName()
-    print ( "Pushing. ", currentScene, " --> ", sceneName )
+    KLLog ( "Pushing. ", currentScene, " --> ", sceneName )
     -- if ( ( #self.navigationStack == 0 and currentScene ~= nil ) or self.navigationStack [ #self.navigationStack ] ~= currentScene ) then
     --     self.navigationStack [ #self.navigationStack + 1 ] = currentScene
     -- end
@@ -70,13 +70,13 @@ function navigator:pushScene ( sceneName, params )
                 local rect = display.newRect( rectG, display.screenLeft, display.screenTop, display.contentWidth, 33 )
                 local color = { 255, 255, 255, 255 }
                 if navigator.navigationBarColor ~= nil then
-                    print ( "Color is defined" )
+                    KLLog ( "Color is defined" )
                     color = navigator.navigationBarColor
                     if color [ 4 ] == nil then
                         color [ 4 ] = 255
                     end
                 end
-                print ( color [ 4 ])
+                -- print ( color [ 4 ])
                 rect:setFillColor ( color [ 1 ], color [ 2 ], color [ 3 ], color [ 4 ])
                 rectG:insert ( rect )
             else
@@ -121,12 +121,12 @@ function navigator:popScene ()
             -- it's a released scene in stack - we need to recreate it now
             newScene [ 1 ] = storyboard.loadScene ( newScene [ 3 ], false, newScene [ 4 ] )
         end
-        print ( "Popping. ", currentScene, " --> ", newScene [ 3 ] )
+        KLLog ( "Popping. ", currentScene, " --> ", newScene [ 3 ] )
         local params = newScene [ 4 ]
         if type ( params ) == "string" then
             params = { effect = params }
         end
-        print ( "Params: ", params )
+        -- print ( "Params: ", params )
         if cs [ 4 ] and cs [ 4 ].effect then
             local effect = cs [ 4 ].effect            
             if effect == "slideDown" then
@@ -145,9 +145,9 @@ function navigator:popScene ()
         end )
         return true
     else
-        print ( " !!! can't pop scene !!! ")
+        KLLog ( " !!! can't pop scene !!! ")
         for i=1, #self.navigationStack do
-            print (self.navigationStack [ i ] [ 3 ])
+            KLLog (self.navigationStack [ i ] [ 3 ])
         end
     end
     return false
@@ -157,9 +157,9 @@ function navigator:freeMem ()
     for i=1, #self.navigationStack - 1 do
         self.navigationStack [ i ] [ 1 ] = "freed mem"
         storyboard.purgeScene ( self.navigationStack [ 3 ])
-        print ( "Freed some memory" )
+        KLLog ( "Freed some memory" )
     end
-    print ("Collect garbage: ", collectgarbage ( "count" ))
+    KLLog ("Collect garbage: ", collectgarbage ( "count" ))
 end
 
 storyboard.pushScene = function ( sceneName, params )
