@@ -78,6 +78,8 @@ end
           display.screenRight = screenX + screenWidth
             display.screenTop = screenY
          display.screenBottom = screenY + screenHeight
+         display.centerX = centerX
+         display.centerY = centerY
    KLCache.contentWidth = display.contentWidth
   KLCache.contentHeight = display.contentHeight
  display.contentWidth = screenWidth
@@ -381,6 +383,8 @@ M.platform = nil
 local model = system.getInfo("model")
 
 M.model = model
+M.targetAppStore = system.getInfo( "targetAppStore" )
+print ("Target app store: ", M.targetAppStore )
 -- Are we on the Simulator?
 if ( "simulator" == system.getInfo("environment") ) then
     M.isSimulator = true
@@ -429,6 +433,37 @@ for _, v in pairs ( M ) do
     end
 end
 
+function M:appStore ( )
+    if self.targetAppStore and self.targetAppStore ~= "none" then
+        return self.targetAppStore
+    else
+        if self.isApple then
+            return "apple"
+        end
+        if self.isConsole then
+            return nil
+        end
+        if self.isKindleFire then
+            return "kindle"
+        end
+        if self.isNook then
+            return "nook"
+        end
+        if self.isGoogle then
+            return "google"
+        end
+    end 
+end
+
+function M:linkToAppstore ( linksTable )
+    local store = self:appStore ()
+    local link = linksTable [ store ]
+    if link ~= nil and link ~= "" then
+        return link
+    else
+        return nil
+    end
+end
 _G["_MODEL"] = M
 
 
