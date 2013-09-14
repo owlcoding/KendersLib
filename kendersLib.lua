@@ -6,7 +6,7 @@ module( pathOfThisFile, package.seeall )
 
 local KLCache = {}
 local Toast = {}
-
+local KL = {}
 
 local sb = require ("storyboard")
 timersStash = {}
@@ -654,3 +654,27 @@ end
 
 _G [ "KLLog" ] = Log
 _G [ "KLGetLogs" ] = GetLogs
+
+KL.interactionsAllowed = true
+
+local function newImageRect (group, path, width, height)
+    if height == nil then
+        height = width
+        width = path
+        path = group
+        group = nil
+    end
+    local ir = display.newImageRect ( group, path, width, height )
+    ir.isActive = true
+    ir:addEventListener("touch", function ( event )
+        -- KLLog ("In tap listener, (x, y) = ", "(" .. event.x .. ", " .. event.y .. ")" )
+        if event.phase == "began" and ir.isActive and ir.action and ir.isVisible and ir.alpha == 1 and KL.interactionsAllowed then
+            return ir.action ( event )
+        end
+        return false
+    end)
+    return ir
+end
+
+KL.newImageRect = newImageRect
+_G ["KL"] = KL
