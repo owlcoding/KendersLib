@@ -182,13 +182,22 @@ function table.contains(t, element)
     end
   end
   return false
-end
+end 
 
 function table.removeObject ( t, element )
+    if t == nil then return end
     for _, value in pairs ( t ) do 
         if value == element then
             table.remove ( t, _ )
             return
+        end
+    end
+end
+function table.joinTables ( t, otherT )
+    for _, value in pairs ( otherT ) do
+        if table.contains ( t, value ) then
+        else
+            t [ #t + 1 ] = value
         end
     end
 end
@@ -602,6 +611,9 @@ end
 function unrequire(m)
     package.loaded[m] = nil
     _G[m] = nil
+    for _, v in pairs ( package.loaded ) do
+        print ("Loaded: ", _ )
+    end
 end
 
 _G [ "unrequire" ] = unrequire
