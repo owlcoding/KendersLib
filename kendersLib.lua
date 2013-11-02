@@ -202,6 +202,28 @@ function table.joinTables ( t, otherT )
     end
 end
 
+function table.slice ( values, i1, i2 )
+    local res = {}
+    local n = #values
+    -- default values for range
+    i1 = i1 or 1
+    i2 = i2 or n
+    if i2 < 0 then
+        i2 = n + i2 + 1
+    elseif i2 > n then
+        i2 = n
+    end
+    if i1 < 1 or i1 > n then
+        return {}
+    end
+    local k = 1
+    for i = i1,i2 do
+        res[k] = values[i]
+        k = k + 1
+    end
+    return res
+end
+
 
 -- **** 
 -- display group sorting
@@ -611,9 +633,6 @@ end
 function unrequire(m)
     package.loaded[m] = nil
     _G[m] = nil
-    for _, v in pairs ( package.loaded ) do
-        print ("Loaded: ", _ )
-    end
 end
 
 _G [ "unrequire" ] = unrequire
@@ -690,3 +709,21 @@ end
 
 KL.newImageRect = newImageRect
 _G ["KL"] = KL
+
+local function showTextByChar ( txtLabel )
+    local x, y, w, h = txtLabel.x, txtLabel.y, txtLabel.contentWidth, txtLabel.contentHeight
+    local text = txtLabel.text
+    txtLabel.text = ""
+    txtLabel.isVisible = true
+    for i=1, string.len( text ) do
+        timer.performWithDelay( 10 * i , function ( )
+            local l = string.sub( text, i , i )
+            -- print ( l )
+            if txtLabel and txtLabel.text then 
+                txtLabel.text = txtLabel.text .. l
+            end
+        end )
+    end
+end
+
+_G [ "showTextByChar" ] = showTextByChar
