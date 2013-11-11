@@ -386,6 +386,16 @@ KLCache.newImageRect = display.newImageRect
 display.newGroup = function () 
     local g = KLCache.newGroup()
     g.setDrag = setDrag
+
+    g.cachedInsert = g.insert
+    function g:insert ( ... )
+        if arg == nil then return end
+        -- print ("ARGS", #arg)
+        for i=1, #arg do
+            g.cachedInsert ( g, arg [ i ])
+        end
+    end
+
     return g
 end
 
@@ -727,3 +737,4 @@ local function showTextByChar ( txtLabel )
 end
 
 _G [ "showTextByChar" ] = showTextByChar
+
