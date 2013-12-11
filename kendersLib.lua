@@ -237,6 +237,9 @@ function zSort(myGroup)
         end
         table.sort(kids,  
                 function(a, b)
+                    if ( a.z == nil and a.layer == nil ) then
+                        KLLog ( a.kind, "has z and layer property nil" )
+                    end
                                 return (a.z or a.layer or 1) < (b.z or b.layer or 1) -- "layer" is your custom z-index field
                 end
         )
@@ -245,6 +248,8 @@ function zSort(myGroup)
         end
         return kids[n]
         -- return myGroup
+    else
+        KLLog ( "Group is nil" )
     end
 end
 _G["zSort"] = zSort
@@ -316,7 +321,8 @@ function KLDebug ( ... )
     end
     debugText = str
     dbgLabel:setText ( str )
-    dbgLabel:setReferencePoint ( display.TopLeftReferencePoint )
+    -- dbgLabel:setReferencePoint ( display.TopLeftReferencePoint )
+    dbgLabel.anchorY, dbgLabel.anchorX = 0, 0
     dbgLabel.x, dbgLabel.y = 10, 10
 end
 _G["KLDebug"] = KLDebug    
@@ -382,9 +388,17 @@ end
 KLCache.newGroup = display.newGroup
 KLCache.newImage = display.newImage
 KLCache.newImageRect = display.newImageRect
+KLCache.newRect = display.newRect
+KLCache.newText = display.newText
 
+display.newRect = function ( ... )
+    local g = KLCache.newRect ( unpack ( arg ))
+    g.kind = "Rect"
+    return g
+end
 display.newGroup = function () 
     local g = KLCache.newGroup()
+    g.kind = "Group"
     g.setDrag = setDrag
 
     g.cachedInsert = g.insert
@@ -399,6 +413,31 @@ display.newGroup = function ()
     return g
 end
 
+display.newImageRect = function ( ... )
+    local g = KLCache.newImageRect ( unpack ( arg ) )
+    local n = ""
+    if type ( arg [ 1 ] ) == type ( "string" ) then
+        n = arg [ 1 ]
+    else 
+        n = arg [ 2 ] 
+    end
+    g.kind = "ImageRect [" .. n .. "]"
+    return g
+end
+
+display.newText = function ( ... )
+    local g = KLCache.newText ( unpack ( arg ))
+    local n = ""
+    if ( #arg == 1 ) then
+        n = arg [ 1 ] [ "text" ]
+    elseif type ( arg [ 1 ] ) == type ( "string" ) then
+        n = arg [ 1 ]
+    else 
+        n = arg [ 2 ] 
+    end
+    g.kind = "Text [" .. n .. "]"
+    return g
+end
 _G.setDrag = setDrag
 
 
@@ -556,7 +595,8 @@ function newToast(pText, pTime)
 
     -- toast:setReferencePoint(toast.width*.5, toast.height*.5)
     --utils.maintainRatio(toast);
-    toast:setReferencePoint ( display.CenterReferencePoint )
+    -- toast:setReferencePoint ( display.CenterReferencePoint )
+    toast.anchorY, toast.anchorX = 0.5, 0.5
     toast.x, toast.y = display.contentWidth / 2, display.screenBottom - toast.contentHeight
 
     toast.alpha = 0;
