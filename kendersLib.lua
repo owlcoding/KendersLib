@@ -266,14 +266,9 @@ math.random (); math.random (); math.random ();
 -- ****
 -- rect methods
 -- ****
-function isPointInRect ( point, rect, optionalArgThatIsARect )
-    if (optionalArgThatIsARect  ~= nil) then
-        -- 3-arguments call. 
-        -- so first 2 arguments are point coordinates and last one is a rect
-        local x = point
-        local y = rect
-        rect = optionalArgThatIsARect 
-        point = {x = x, y = y}
+function isPointInRect ( point, rect )
+    if point == nil or rect == nil or point.x == nil or point.y == nil then
+        return false
     end
     if ( point.x > rect.xMin and point.x < rect.xMax and point.y > rect.yMin and point.y < rect.yMax ) then
         return true
@@ -283,6 +278,9 @@ function isPointInRect ( point, rect, optionalArgThatIsARect )
 end
 
 function rectsOverlap ( rect1, rect2 )
+    if rect1 == nil or rect2 == nil then 
+        return false
+    end
     if (rect1.xMax < rect2.xMin or rect1.xMin > rect2.xMax or rect1.yMax < rect2.yMin or rect1.yMin > rect2.yMax) then
         return false
     end
@@ -332,9 +330,13 @@ _G["KLDebug"] = KLDebug
 -- dragable display objects
 -- ****
 
-local setDrag = function ( obj, params )
+local setDrag
+setDrag = function ( obj, params )
     local xref, yref
     local touchId 
+    if obj == nil then
+        return 
+    end
     if obj.__drag_added == nil then
         obj.__drag_added = false
     end
@@ -343,25 +345,26 @@ local setDrag = function ( obj, params )
             local ph = event.phase
             local s = event.target
             local x, y = event.x, event.y
-            
+            local __params = params
             if "began" == ph and s.touchId == nil then
                 xref, yref = x - s.x, y - s.y
                 display.getCurrentStage ():setFocus ( s )
                 s.touchId = event.id
-                if params.onTouch then
+                if params and params.onTouch then
                     params.onTouch ( event )
                 end
             end
             if "moved" == ph and s.touchId == event.id then
                 s.x, s.y = x - xref, y - yref
-                if params.onMove then
+                if params and params.onMove then
                     params.onMove ( event )
                 end
             end
             if "ended" == ph and s.touchId == event.id then
                 display.getCurrentStage ():setFocus ( nil )
                 s.touchId = nil
-                if params.onRelease then
+                -- print ( "p, params.onRelease", params, params.onRelease )
+                if params and params.onRelease then
                     params.onRelease ( event )
                 end
             end         
@@ -369,18 +372,28 @@ local setDrag = function ( obj, params )
     end
     
     if params == nil then
-        Log ("Removing touch")
-        obj:removeEventListener ( "touch", obj.__drag )
-        obj.__drag = nil
-        obj.__drag_added = false
+        print ("Set Drag with nil parameter" )
+        if obj ~= nil and obj.__drag ~= nil then
+            print ("Removing touch")
+            -- display.getCurrentStage ():setFocus ( nil )
+            obj.__drag ( { phase = "ended", id = obj.touchId, target = obj })
+
+
+            obj:removeEventListener ( "touch", obj.__drag )
+            obj.__drag = nil
+            obj.__drag_added = false
+        end
     else
         if obj.__drag_added == true then
-            Log ("WARNING: Can't add second drag handler to the same object!")
+            print ("WARNING: Can't add second drag handler to the same object!")
         else
-            Log ("Adding touch")
+            print ("Adding touch")
             obj:addEventListener ( "touch", obj.__drag )
             obj.__drag_added = true
         end
+    end
+    function obj:cancelDrag ( )
+        setDrag ( self, nil )
     end
 end
 
@@ -514,25 +527,27 @@ for _, v in pairs ( M ) do
 end
 
 function M:appStore ( )
+    local platform = nil
     if self.targetAppStore and self.targetAppStore ~= "none" then
-        return self.targetAppStore
+        platform = self.targetAppStore
     else
         if self.isApple then
-            return "apple"
+            platform = "apple"
+        elseif self.isConsole then
+            platform = nil
+        elseif self.isAndroid then
+            -- if android, but no store selected, return nil
+            -- to prevent accidental going to wrong store (for example, Amazon store if app was installed on Kindle via Google Play)
+            platform = nil
+        elseif self.isKindleFire then
+            platform = "kindle"
+        elseif self.isNook then
+            platform = "nook"
+        elseif self.isGoogle then
+            platform = "google"
         end
-        if self.isConsole then
-            return nil
-        end
-        if self.isKindleFire then
-            return "kindle"
-        end
-        if self.isNook then
-            return "nook"
-        end
-        if self.isGoogle then
-            return "google"
-        end
-    end 
+    end
+    return platform
 end
 
 function M:linkToAppstore ( linksTable )
@@ -596,6 +611,7 @@ function newToast(pText, pTime)
     -- toast:setReferencePoint(toast.width*.5, toast.height*.5)
     --utils.maintainRatio(toast);
     -- toast:setReferencePoint ( display.CenterReferencePoint )
+    Log ( "T debug", display.CenterReferencePoint, toast.anchorX )
     toast.anchorY, toast.anchorX = 0.5, 0.5
     toast.x, toast.y = display.contentWidth / 2, display.screenBottom - toast.contentHeight
 
@@ -703,6 +719,8 @@ local str = function ( o )
             -- print ("F", k, v )
         end
         return "" .. "function"
+    elseif type ( o ) == "userdata" then
+        return "" .. "userdata"
     else
         return "" .. o
     end
