@@ -524,7 +524,7 @@ function M:appStore ( )
             return nil
         end
         if self.isKindleFire then
-            return "kindle"
+            return "amazon"
         end
         if self.isNook then
             return "nook"
