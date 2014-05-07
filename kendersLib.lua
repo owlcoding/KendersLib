@@ -431,9 +431,10 @@ display.newImageRect = function ( ... )
     local n = ""
     if type ( arg [ 1 ] ) == type ( "string" ) then
         n = arg [ 1 ]
-    else 
+    elseif type ( arg [ 2 ] ) == type ("string") then
         n = arg [ 2 ] 
     end
+    -- print ( n )
     g.kind = "ImageRect [" .. n .. "]"
     return g
 end
