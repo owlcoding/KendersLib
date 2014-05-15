@@ -796,3 +796,16 @@ end
 
 _G [ "showTextByChar" ] = showTextByChar
 
+local resourceLoader = {}
+
+function resourceLoader:new ( resourceFileName )
+    local r = json ( resourceFileName )
+    self.resources = r
+end
+
+function resourceLoader:resource ( key )
+    return self.resources [ key ]
+end
+
+_G [ "resourceLoader" ] = resourceLoader
+
