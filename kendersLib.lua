@@ -415,14 +415,19 @@ display.newGroup = function ()
     g.setDrag = setDrag
 
     g.cachedInsert = g.insert
+    
     function g:insert ( ... )
         if arg == nil then return end
-        -- print ("ARGS", #arg)
+        print ("ARGS", #arg)
         for i=1, #arg do
-            g.cachedInsert ( g, arg [ i ])
+            print ( arg[i])
+            if type(arg[i]) == type ( 1) then
+            else
+                g.cachedInsert ( g, arg [ i ])
+            end
         end
     end
-
+    
     return g
 end
 
@@ -653,7 +658,9 @@ local printTable
 local table2str
 
 table2str = function ( t, indent )
-    
+    if t == nil then
+        return
+    end
     if indent == nil then indent = 1 end
     local s = ""
     local ind = ""
@@ -810,3 +817,25 @@ end
 
 _G [ "resourceLoader" ] = resourceLoader
 
+local function anchor00 ( displayObject )
+    displayObject.anchorX = 0
+    displayObject.anchorY = 0
+end
+
+display.anchor00 = anchor00
+
+function shallowcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in pairs(orig) do
+            copy[orig_key] = orig_value
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+table.copy = shallowcopy
