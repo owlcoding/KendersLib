@@ -418,9 +418,9 @@ display.newGroup = function ()
     
     function g:insert ( ... )
         if arg == nil then return end
-        print ("ARGS", #arg)
+        -- print ("ARGS", #arg)
         for i=1, #arg do
-            print ( arg[i])
+            -- print ( arg[i])
             if type(arg[i]) == type ( 1) then
             else
                 g.cachedInsert ( g, arg [ i ])
@@ -681,6 +681,9 @@ table2str = function ( t, indent )
             if type ( v ) == "function" then
                 v = "function" 
             end
+            if type ( v ) == "userdata" then
+                v = "userdata"
+            end
             s = s .. ind .. k .. " => " .. v .. ", "
         end
         -- s = "\n" .. s .. "\n"
@@ -839,3 +842,21 @@ function shallowcopy(orig)
 end
 
 table.copy = shallowcopy
+
+local widget = require ( "widget" )
+local origNewButton = widget.newButton
+
+widget.newButton = function ( params )
+    local w = origNewButton ( params )
+    w.origSetEnabled = w.setEnabled
+    w.setEnabled = function ( button, enabled )
+        print ("Inside setEnabled for button" )
+        button.origSetEnabled ( button, enabled )
+        if enabled then
+            button.alpha = 1
+        else
+            button.alpha = 0.5
+        end
+    end
+    return w
+end
