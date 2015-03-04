@@ -455,6 +455,16 @@ display.newText = function ( ... )
         n = arg [ 2 ] 
     end
     g.kind = "Text [" .. n .. "]"
+
+    local stt = g.setTextColor
+    g.setTextColor = function ( g, params )
+        if type ( params ) == 'table' then
+            stt (g, params [ 1 ], params [ 2 ], params [ 3 ] )
+        else
+            stt (g, params )
+        end
+    end
+
     return g
 end
 _G.setDrag = setDrag
@@ -860,3 +870,32 @@ widget.newButton = function ( params )
     end
     return w
 end
+
+local function cleanHtml ( t ) -- from https://gist.github.com/HoraceBury/9001099
+    local cleaner = {
+        { "&amp;", "&" }, -- decode ampersands
+        { "&#151;", "-" }, -- em dash
+        { "&#146;", "'" }, -- right single quote
+        { "&#147;", "\"" }, -- left double quote
+        { "&#148;", "\"" }, -- right double quote
+        { "&#150;", "-" }, -- en dash
+        { "&#160;", " " }, -- non-breaking space
+        { "<br ?/?>", "\n" }, -- all <br> tags whether terminated or not (<br> <br/> <br />) become new lines
+        { "</p>", "\n" }, -- ends of paragraphs become new lines
+        { "(%b<>)", "" }, -- all other html elements are completely removed (must be done last)
+        { "\r", "\n" }, -- return carriage become new lines
+        { "[\n\n]+", "\n" }, -- reduce all multiple new lines with a single new line
+        { "^\n*", "" }, -- trim new lines from the start...
+        { "\n*$", "" }, -- ... and end
+    }
+ 
+    -- clean html from the string
+    for i=1, #cleaner do
+        local cleans = cleaner[i]
+        t = string.gsub( t, cleans[1], cleans[2] )
+    end
+     
+    -- print("["..t.."]") -- print the string with end indicators
+    return t
+end
+_G ["cleanHtml"] = cleanHtml
