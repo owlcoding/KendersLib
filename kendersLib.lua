@@ -899,3 +899,50 @@ local function cleanHtml ( t ) -- from https://gist.github.com/HoraceBury/900109
     return t
 end
 _G ["cleanHtml"] = cleanHtml
+
+local function fileExists(fileName, base)
+  assert(fileName, "fileName does not exist")
+  local base = base or system.ResourceDirectory
+  local filePath = system.pathForFile( fileName, base )
+  local exists = false
+ 
+  if (filePath) then
+    local fileHandle = io.open( filePath, "r" )
+    if (fileHandle) then
+      exists = true
+      io.close(fileHandle)
+    end
+  end
+ 
+  return(exists)
+end
+
+
+local function remoteImage ( url, filename, width, height )
+    local p = system.pathForFile ( filename, system.CachesDirectory )
+    local g = display.newGroup ()
+    local ri 
+    print ( "path", p )
+    if not fileExists ( filename, system.CachesDirectory ) then
+        ri = display.newImageRect ( "assets/graphics/dummy.png", width, height )
+    else
+        -- displaying image from cache
+        print ( "displaying image from cache (" .. filename .. ")" )
+        ri = display.newImageRect ( filename, system.CachesDirectory, width, height )
+    end
+    g:insert ( ri )
+    if url then
+        network.download ( url, "GET", function ( ev )
+            if ev.phase == "ended" then
+                if g then
+                    local ri2 = display.newImageRect ( filename, system.CachesDirectory, width, height )
+                    g:insert ( ri2 )
+                    ri:removeSelf ()
+                end
+            end
+        end, filename, system.CachesDirectory )
+    end
+    return g
+end
+display.remoteImage = remoteImage
+
