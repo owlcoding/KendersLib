@@ -421,8 +421,9 @@ display.newGroup = function ()
         -- print ("ARGS", #arg)
         for i=1, #arg do
             -- print ( arg[i])
-            if type(arg[i]) == type ( 1) then
+            if type(arg[i]) == type ( 1 ) then
             else
+                -- print ( g, type ( arg [ i ]) )
                 g.cachedInsert ( g, arg [ i ])
             end
         end
@@ -917,27 +918,47 @@ local function fileExists(fileName, base)
   return(exists)
 end
 
+local InMemoryCache = {}
 
 local function remoteImage ( url, filename, width, height )
     local p = system.pathForFile ( filename, system.CachesDirectory )
     local g = display.newGroup ()
     local ri 
-    print ( "path", p )
-    if not fileExists ( filename, system.CachesDirectory ) then
+
+    local remSelf = g.removeSelf
+    function g:removeSelf ( )
+        print ( "Removing remote Image" )
+        if ri and ri.parent then
+            ri:removeSelf ()
+        end
+        remSelf ( g )
+    end
+
+    -- print ( "path", p, InMemoryCache [ p ] )
+    local exists = fileExists ( filename, system.CachesDirectory )
+    if not exists then
         ri = display.newImageRect ( "assets/graphics/dummy.png", width, height )
     else
         -- displaying image from cache
-        print ( "displaying image from cache (" .. filename .. ")" )
+        -- print ( "displaying image from cache (" .. filename .. ")" )
         ri = display.newImageRect ( filename, system.CachesDirectory, width, height )
     end
     g:insert ( ri )
-    if url then
+
+
+    if url and not exists then
         network.download ( url, "GET", function ( ev )
             if ev.phase == "ended" then
-                if g then
+                if g and g.parent then
                     local ri2 = display.newImageRect ( filename, system.CachesDirectory, width, height )
-                    g:insert ( ri2 )
-                    ri:removeSelf ()
+
+                    if g and g.parent then
+                        g:insert ( ri2 )
+                    end
+                    if ri and ri.parent then
+                        ri:removeSelf ()
+                    end
+                    ri = ri2
                 end
             end
         end, filename, system.CachesDirectory )
