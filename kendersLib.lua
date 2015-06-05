@@ -456,8 +456,8 @@ display.newText = function ( ... )
     end
     g.kind = "Text [" .. n .. "]"
 
-    local stt = g.setTextColor
-    g.setTextColor = function ( g, params )
+    local stt = g.setFillColor
+    g.setFillColor = function ( g, params )
         if type ( params ) == 'table' then
             stt (g, params [ 1 ], params [ 2 ], params [ 3 ] )
         else
