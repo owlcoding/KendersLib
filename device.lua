@@ -83,6 +83,8 @@ function M:appStore ( )
     else
         if self.isApple then
             platform = "apple"
+        elseif self.isMac then
+            platform = "apple"
         elseif self.isConsole then
             platform = nil
         elseif self.isAndroid then
