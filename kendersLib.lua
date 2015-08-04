@@ -471,7 +471,6 @@ end
 _G.setDrag = setDrag
 
 
-
 -- persistent data storage, using GGData module ( https://github.com/GlitchGames/GGData.git )
 local GGData = require ( folderOfThisFile .. "GG.GGData.corona.GGData" )
 local savedState = GGData:new( "savedState" )

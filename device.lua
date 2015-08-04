@@ -30,8 +30,14 @@ if ( (display.pixelHeight/display.pixelWidth) > 1.5 ) then
     M.isTall = true
 end
  
--- Now identify the Apple family of devices:
-if ( string.sub( model, 1, 2 ) == "iP" ) then
+-- check if it's Mac
+print ( "===== Model: ", model )
+if ( string.sub ( model, 1, 3 ) == "Mac" ) then
+    M.isMac = true
+elseif ( string.sub ( model, 1, 3 ) == "Win" ) then
+    M.isWindows = true
+elseif ( string.sub( model, 1, 2 ) == "iP" ) then
+    -- Now identify the Apple family of devices:
     -- We are an iOS device of some sort
     M.isApple = true
  
@@ -104,4 +110,3 @@ function M:linkToAppstore ( linksTable )
     end
 end
 _G["_MODEL"] = M
-
