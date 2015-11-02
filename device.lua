@@ -34,8 +34,10 @@ end
 print ( "===== Model: ", model )
 if ( string.sub ( model, 1, 3 ) == "Mac" ) then
     M.isMac = true
+    M.isDesktop = true
 elseif ( string.sub ( model, 1, 3 ) == "Win" ) then
     M.isWindows = true
+    M.isDesktop = true
 elseif ( string.sub( model, 1, 2 ) == "iP" ) then
     -- Now identify the Apple family of devices:
     -- We are an iOS device of some sort
