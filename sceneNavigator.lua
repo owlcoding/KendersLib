@@ -16,7 +16,7 @@
 -- Don't know how to do it other way, to allow easier integration with the current code
 -- 
 
-local storyboard = require ( "storyboard" )
+local storyboard = require ( "composer" )
 local widget = require ( "widget" )
 storyboard.navigator = {}
 local navigator = storyboard.navigator
@@ -67,13 +67,13 @@ function navigator:pushScene ( sceneName, params )
             local rectG = display.newGroup ()
             newScene.view:insert ( rectG )
             if self.navigationBarImage == nil then
-                local rect = display.newRect( rectG, display.screenLeft, display.screenTop, display.contentWidth, 33 )
-                local color = { 255, 255, 255, 255 }
+                local rect = display.newRect( rectG, display.centerX, 16.5, display.contentWidth, 33 )
+                local color = { 1, 1, 1, 1 }
                 if navigator.navigationBarColor ~= nil then
                     KLLog ( "Color is defined" )
                     color = navigator.navigationBarColor
                     if color [ 4 ] == nil then
-                        color [ 4 ] = 255
+                        color [ 4 ] = 1
                     end
                 end
                 -- print ( color [ 4 ])
@@ -98,6 +98,8 @@ function navigator:pushScene ( sceneName, params )
                     width = 80,
                     height = 29,
                     fontSize = 9,
+                    -- shape = "rect",
+                    -- fillColor = { default={ 0, 0, 0 }, over={ 0.4, 0.1, 0.2 } },
                     onRelease = function ()
                         self:popScene ()
                     end,

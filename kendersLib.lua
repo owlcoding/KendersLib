@@ -8,7 +8,7 @@ local KLCache = {}
 local Toast = {}
 local KL = {}
 
-local sb = require ("storyboard")
+local sb = require ("composer")
 timersStash = {}
 tmPerformCache = timer.performWithDelay
 timer.performWithDelay = function ( t, f, r )
@@ -510,17 +510,18 @@ function newToast(pText, pTime)
     local toast = display.newGroup();
 
     toast.text                      = display.newText(toast, pText, 14, 12, native.systemFont, 20);
+    toast.text.x                    = 0
+    toast.text.y                    = 0
     toast.background                = display.newRoundedRect( toast, 0, 0, toast.text.width + 24, toast.text.height + 24, 16 );
-    toast.background.strokeWidth    = 4
-    toast.background:setFillColor(72, 64, 72)
-    toast.background:setStrokeColor(96, 88, 96)
-
+    toast.background.strokeWidth    = 2
+    toast.background:setFillColor(72/255, 64/255, 72/255)
+    toast.background:setStrokeColor(96/255, 88/255, 96/255)
+    toast.background.alpha = 0.8
     toast.text:toFront();
 
     -- toast:setReferencePoint(toast.width*.5, toast.height*.5)
     --utils.maintainRatio(toast);
     -- toast:setReferencePoint ( display.CenterReferencePoint )
-    Log ( "T debug", display.CenterReferencePoint, toast.anchorX )
     toast.anchorY, toast.anchorX = 0.5, 0.5
     toast.x, toast.y = display.contentWidth / 2, display.screenBottom - toast.contentHeight
 
@@ -531,7 +532,7 @@ function newToast(pText, pTime)
         toast.destroyTimer = timer.performWithDelay(pTime, function() destroyToast(toast) end);
     end
 
-    toast.x = display.contentWidth * .5
+    toast.x = display.contentWidth * .5 -- toast.contentWidth / 4
     toast.y = display.contentHeight * .9
     Toast.allToasts [ #Toast.allToasts + 1 ] = toast
     return toast;
