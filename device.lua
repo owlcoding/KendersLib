@@ -16,6 +16,7 @@ M.is_iPad = false
 M.isTall = false
 M.isSimulator = false
 M.platform = nil
+M.isTablet = false
 
 local model = system.getInfo("model")
 
@@ -45,11 +46,20 @@ elseif ( string.sub( model, 1, 2 ) == "iP" ) then
  
     if ( string.sub( model, 1, 4 ) == "iPad" ) then
         M.is_iPad = true
+        M.isTablet = true
     end
 else
     -- Not Apple, so it must be one of the Android devices
     M.isAndroid = true
- 
+    local approximateDpi = system.getInfo("androidDisplayApproximateDpi")
+    if approximateDpi then
+        local widthInInches = display.pixelWidth / approximateDpi
+        local heightInInches = display.pixelHeight / approximateDpi
+        local diagonalInInches = math.sqrt ( widthInInches * widthInInches + heightInInches * heightInInches )
+        if diagonalInInches >= 6 then
+            M.isTablet = true
+        end
+    end
     -- Let's assume we are on Google Play for the moment
     M.isGoogle = true
  
