@@ -224,6 +224,16 @@ function table.slice ( values, i1, i2 )
     return res
 end
 
+function table.indexOf ( tbl, element )
+    for _, v in pairs(tbl) do
+        if element == v then
+            return _
+        end
+    end
+    return -1
+end
+
+
 
 -- **** 
 -- display group sorting
