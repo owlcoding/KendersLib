@@ -488,6 +488,12 @@ savedState:save()
 
 _G["savedState"] = savedState
 
+cacheState = GGData:new ( "cache" )
+cacheState:save()
+
+_G["cacheState"] = cacheState
+
+
 
 -- toast
 Toast.allToasts = {}
