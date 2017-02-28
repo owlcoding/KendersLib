@@ -493,7 +493,13 @@ cacheState:save()
 
 _G["cacheState"] = cacheState
 
+local function jsonBox ( name )
+    local box = GGData:new (name)
+    box:save()
+    return box
+end
 
+_G.jsonBox = jsonBox
 
 -- toast
 Toast.allToasts = {}
