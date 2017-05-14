@@ -133,15 +133,22 @@ local jsonFile = function( filename, base )
 	
 	return contents
 end
-function json ( filename, key )
-	local t = js.decode( jsonFile( filename ) )
-	if key then
-		for k,v in pairs ( split ( key, "|" )) do
-			t = t [v]
-		end
-		-- t = t [ key ]
-	end
-	return t
+function json ( filename, key, params )
+    if params == nil then
+        params = {}
+    end
+    local file = jsonFile ( filename, params.directory )
+    if ( file == nil ) then
+        return nil
+    end
+    local t = js.decode( file )
+    if key then
+        for k,v in pairs ( split ( key, "|" )) do
+            t = t [v]
+        end
+        -- t = t [ key ]
+    end
+    return t
 end
 _G["json"] = json
 
